@@ -1,0 +1,127 @@
+{% extends "base.html" %}
+
+{% load static %}
+
+{% block menu_links %}
+{% if request.user.is_authenticated %}
+{% if request.user == sviluppo.progetto.autore %}
+<li class="nav-item"><a class="nav-link" href="{% url "progetto_modifica" sviluppo.progetto.id %}"><span>Modifica progetto</span></a></li>
+{% endif %}
+{% if request.user == sviluppo.responsabile %}
+<li class="nav-item"><a class="nav-link" href="{% url "sviluppo_modifica" sviluppo.id %}"><span>Modifica attività</span></a></li>
+{% endif %}
+<li class="nav-item"><a class="nav-link" href="{% url "sviluppo_nuovo" sviluppo.progetto.id %}"><span>Aggiungi attività</span></a></li>
+<li class="nav-item"><a class="nav-link" href="{% url "progetti_utente" %}"><span>I miei progetti</span></a></li>
+{% endif %}
+{% endblock menu_links %}
+
+{% block container %}
+<nav class="breadcrumb-container" aria-label="breadcrumb">
+  <div class="container">
+    <div class="col-12">
+      <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="{% url "home" %}">Home</a><span class="separator">/</span></li>
+        <li class="breadcrumb-item"><a href="{% url "progetti" %}">Progetti</a><span class="separator">/</span></li>
+        <li class="breadcrumb-item"><a href="{% url "progetto_dettagli" sviluppo.progetto.id %}">{{sviluppo.progetto.titolo|truncatechars:50|capfirst}}</a><span class="separator">/</span></li>
+        <li class="breadcrumb-item"><a href="{% url "progetto_storia" sviluppo.progetto.id %}">Sviluppi</a><span class="separator">/</span></li>
+        <li class="breadcrumb-item active" aria-current="page">{{sviluppo.nome}}</li>
+      </ol>
+    </div>
+  </div>
+</nav>
+<div class="py5" style="padding-top:48px;">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-7">
+                <div class="intro-name">
+                <h1 class="mb-3">{{sviluppo.nome}}</h1>
+                <div>
+                    <p class="mb-5">{{sviluppo.descrizione}}</p>
+                    <div class="row">
+                    <div class="col-sm">
+                        <p>
+                        <span class="text-muted bigger-font ">Responsabile</span>
+                        <br/>
+                        <a class="no-color" href="{% url 'ricerca' %}?contributore={{sviluppo.responsabile}}"> {{sviluppo.responsabile}} </a>
+                        </p>
+                    </div>
+                    </div>
+                </div>
+                </div>
+            </div>
+            <div class="offset-md-1 col-md-4">
+                <div class="row">
+                    <div class="col-sm">
+                        <p>
+                        <span class="text-muted bigger-font ">Data inizio</span>
+                        <br/>
+                        {% if sviluppo.data_inizio %}
+                        <span>{{sviluppo.data_inizio}}</span>
+                        {% else %}
+                        <span>Non disponibile</span>
+                        {% endif %}
+                        </p>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-sm">
+                        <p>
+                            <span class="text-muted bigger-font ">Data fine</span>
+                            <br/>
+                            {% if sviluppo.data_fine %}
+                            <span>{{sviluppo.data_fine}}</span>
+                            {% else %}
+                            <span>Non disponibile</span>
+                            {% endif %}
+                        </p>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-sm">
+                        <p>
+                            <span class="text-muted bigger-font ">Stato</span>
+                            <br/>
+
+                            <span>{{sviluppo.stato}}</span>
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<hr>
+{% if sviluppi %}
+<div class="py5" style="padding-top:24px; padding-bottom: 48px;">
+    <div class="container">
+        <h2 class="mb-3 lighter">
+            <span> Altre attività </span>          
+        </h2>
+        <div class="row">
+            {% for cont in sviluppi %}
+            <div class="col-12 col-md-6 col-lg-4 ">
+              <!--start card-->
+                <div class="card-wrapper card-space">
+                  <div class="card card-teaser rounded shadow">
+                    <div class="card-body">
+                      <div class="card-text mb-5">
+                        <h5 class="mb-2 card-title">{{cont.nome | upper}}</h5>
+                        <div class="my-2">
+                          <p>{{cont.descrizione|truncatewords:50}}</p>
+                        </div>
+                      </div>
+                      <a class="read-more" href="{% url 'sviluppo_dettagli' cont.id %}">
+                        <span>Leggi di più</span>
+                      </a>
+                    </div>  
+                  </div>
+                </div>
+              <!--end card-->
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% endif %}
+
+{% endblock container %}

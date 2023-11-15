@@ -1,0 +1,95 @@
+<!-- Extends default Bootstrap Italia template -->
+{% extends 'bootstrap-italia-base.html' %}
+
+{% load i18n %}
+<!-- From app django-sass-processor -->
+{% load sass_tags %}
+
+{% load static %}
+
+<!-- Page Title -->
+{% block page_title %}
+Portale progetti tesi
+{% endblock page_title %}
+
+<!-- My custom scss sheet -->
+{% block extra_head %}
+<link rel="stylesheet" href="{% static 'css/bootstrap-italia.min.css' %}" />
+<link rel="stylesheet" href="{% static 'css/unicms_unical.css' %}" type="text/css" />
+<link rel="stylesheet" href="{% static 'css/colors/unicms_unical.css' %}" type="text/css" />
+
+<link rel="icon" href="{% static 'images/favicon/favicon-32x32.png' %}" sizes="32x32" type="image/png">
+{% endblock extra_head %}
+
+<!-- Name top left -->
+{% block header_slim_org_name %}
+<h6>UniCal.it</h6>
+{% endblock header_slim_org_name %}
+
+<!-- Mobile slim_org_name -->
+{% block header_slim_mobile_org_name %}
+<h6>UniCal.it</h6>
+{% endblock header_slim_mobile_org_name %}
+
+<!-- Make empty areas -->
+{% block header_mobile_arrow %}{% endblock header_mobile_arrow %}
+{% block header_mobile_slim_menu %}{% endblock header_mobile_slim_menu %}
+{% block header_center_social %}{% endblock header_center_social %}
+{% block menu_links %}{% endblock menu_links %}
+
+{% block header_center_logo %}
+<div class="icon">
+    <img class="mw-100" src="{% static 'images/logo_white.png' %}">
+</div>
+{% endblock header_center_logo %}
+
+{% block header_center_url %}
+{% url "home" %}
+{% endblock header_center_url %}
+
+{% block header_brand_text %}
+<div class="it-brand-text" style="color: white;">
+    <h2 class="no_toc">
+        Portale per la gestione dei progetti di tesi
+    </h2>
+</div>
+{% endblock header_brand_text %}
+
+{% block header_slim_org_url %}
+https://www.unical.it/
+{% endblock header_slim_org_url %}
+
+
+{% block header_slim_sub_menu %}
+{% endblock header_slim_sub_menu %}
+
+{% block header_slim_buttons %}
+<div class="it-access-top-wrapper">
+    {% if request.user.is_authenticated %}
+    <span style="color: white;">Benvenuto, <a style="background: none;" class="fw-bold text-uppercase" href="{% url "logout" %}">{{request.user.username}}</a></span>
+    <a class="btn btn-primary btn-sm" href="{% url "logout" %}">{% trans "Esci" %}</a>
+    {% else %}
+    <a class="btn btn-primary btn-sm" href="{% url "login" %}">{% trans "Accedi" %}</a>
+    <a class="btn btn-primary btn-sm" href="{% url "registrazione" %}">{% trans "Registrati" %}</a>
+    {% endif %}
+</div>
+{% endblock header_slim_buttons %}
+
+
+<!-- Ricerca -->
+{% block header_center_search_text %}
+<form id="search-form" class="d-flex" action="{% url "ricerca" %}" role="search" method="GET">
+    <input
+       class="top-input d-none d-md-block"
+       type="search"
+       placeholder="Cerca..."
+       name="titolo"
+       aria-label="Cerca"
+    >
+   </form>
+{% endblock header_center_search_text %}
+{% block header_center_search_url %}javascript:void(0)" onclick="document.getElementById('search-form').submit();{% endblock header_center_search_url %}
+
+
+
+{% block footer %}{% endblock footer %}

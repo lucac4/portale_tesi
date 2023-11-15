@@ -1,0 +1,115 @@
+{% extends "base.html" %}
+
+{% load static %}
+
+{% block header_slim_buttons %}{% endblock header_slim_buttons %}
+
+{% block container %}
+<nav class="breadcrumb-container" aria-label="breadcrumb">
+  <div class="container">
+    <div class="col-12">
+      <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="{% url 'home' %}">Home</a><span class="separator">/</span></li>
+        <li class="breadcrumb-item"><a href="{% url 'progetti' %}">Progetti</a><span class="separator">/</span></li>
+        <li class="breadcrumb-item"><a href="{% url 'progetto_dettagli' progetto.id %}">{{progetto.titolo}}</a><span class="separator">/</span></li>
+        <li class="breadcrumb-item active" aria-current="page">Modifica progetto</li>
+      </ol>
+    </div>
+  </div>
+</nav>
+<div class="py5" style="padding-top:48px; padding-bottom: 48px;">
+  <div class="container">
+    <div class="row">
+      <div class="col">
+        <div class="intro-name">
+          <h1 class="mb-3">Modifica "{{progetto.titolo}}"</h1>
+          <div>
+            <div class="row">
+              <h2 class="lighter">Informazioni base</h2>
+              <div class="col">
+                <form method="POST" class="form" enctype="multipart/form-data">
+                  {% csrf_token %}
+                  <p>
+                    {{ form.titolo.errors }}
+                    {{ form.titolo.label}}
+                    {{ form.titolo }}
+                  </p>
+                  <p>
+                    {{ form.descrizione.errors }}
+                    {{ form.descrizione.label}}
+                    {{ form.descrizione }}
+                  </p>
+                  <p>
+                    {{ form.link_progetto.errors }}
+                    {{ form.link_progetto.label}}
+                    {{ form.link_progetto }}
+                  </p>
+                  <p>
+                    {{ form.stato.errors }}
+                    {{ form.stato.label}}
+                    {{ form.stato }}
+                  </p>
+                  <button type="submit" name="progetto_modifica" class="btn btn-primary">Modifica informazioni</button>
+                </form>
+              </div>
+              <h2 class="lighter mt-5">Tags</h2>
+              <div class="col">
+                <form method="POST" class="form" enctype="multipart/form-data">
+                  {% csrf_token %}
+                  <p>
+                    {{ form.tags.errors }}
+                    {{ form.tags }}
+                  </p>
+                  <p>
+                    {{ tag_form.nome.errors }}
+                    <label for="{{tag_form.nome.id_for_label}}">Nuovo tag</label>
+                    {{ tag_form.nome }}
+                  </p>
+                  <button type="submit" name="tag_aggiungi" class="btn btn-primary">Modifica tag</button>
+                </form>
+              </div>
+              <h2 class="lighter mt-5">Immagini</h2>
+              <div class="col">
+                <form method="POST" class="form" enctype="multipart/form-data">
+                  {% csrf_token %}
+                  <div class="row">
+                    <div class="it-grid-list-wrapper it-image-label-grid">
+                      <div class="grid-row">
+                        {% for immagine in progetto.immagine_set.all %}
+                        <div class="col-6 col-lg-4">
+                          <div class="it-grid-item-wrapper">
+                            <div class="img-responsive">
+                              <div class="img-wrapper">
+                                <img src="{{immagine.img.url}}" class="img-fluid" alt="">
+                              </div>
+                            </div>
+                            <a href="{% url "immagine_elimina" immagine.id %}?next={{ request.path|urlencode }}">
+                            <span class="it-griditem-text-wrapper">
+                              <span class="it-griditem-text">Rimuovi</span>
+                              <svg class="icon">
+                                <use href="{% static '/svg/sprites.svg' %}#it-close"></use>
+                              </svg>
+                            </span>
+                            <a>
+                          </div>
+                        </div>
+                        {% endfor %}
+                      </div>
+                    </div>
+                  </div>
+                  <p>
+                    {{ immagine_form.img.errors }}
+                    {{ immagine_form.img }}
+                  </p>
+                  <button type="submit" name="immagini_aggiungi" class="btn btn-primary">Aggiungi immagini</button>
+                </form>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+{% endblock container %}

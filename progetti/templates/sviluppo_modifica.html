@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+
+{% block header_slim_buttons %}{% endblock header_slim_buttons %}
+
+{% block container %}
+<nav class="breadcrumb-container" aria-label="breadcrumb">
+  <div class="container">
+    <div class="col-12">
+      <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="{% url "home" %}">Home</a><span class="separator">/</span></li>
+        <li class="breadcrumb-item"><a href="{% url "progetti" %}">Progetti</a><span class="separator">/</span></li>
+        <li class="breadcrumb-item"><a href="{% url "progetto_dettagli" sviluppo.progetto.id %}">{{sviluppo.progetto.titolo|truncatechars:30}}</a><span class="separator">/</span></li>
+        <li class="breadcrumb-item active" aria-current="page">Aggiungi contributo</li>
+      </ol>
+    </div>
+  </div>
+</nav>
+<div class="py5" style="padding-top:48px; padding-bottom: 48px;">
+  <div class="container">
+    <div class="row">
+        <div class="intro-name">
+          <h1 class="mb-3">Modifica contributo</h1>
+          <div>
+            <div class="row my-5">
+                <form method="POST" class="form" enctype="multipart/form-data">
+                  {% csrf_token %}
+                  {{ form.as_p }}
+                  <a href="{% url "sviluppo_dettagli" sviluppo.id %}" class="btn btn-outline-primary">Annulla</a>
+                  <button type="submit" class="btn btn-primary">Modifica</button>
+                </form>
+            </div>
+          </div>
+        </div>
+    </div>
+  </div>
+</div>
+
+{% endblock container %}

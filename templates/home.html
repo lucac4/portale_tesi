@@ -1,0 +1,101 @@
+{% extends "base.html" %}
+
+{% block menu_links %}
+<li class="nav-item"><a class="nav-link" href="{% url "progetti" %}"><span>Lista dei progetti</span></a></li>
+{% if request.user.is_authenticated %}
+<li class="nav-item"><a class="nav-link" href="{% url "progetto_nuovo" %}"><span>Crea progetto</span></a></li>
+<li class="nav-item"><a class="nav-link" href="{% url "progetti_utente" %}"><span>I miei progetti</span></a></li>
+{% endif %}
+{% endblock menu_links %}
+
+{% block container %}
+<div class="py5" style="padding-top:48px; padding-bottom: 48px;">
+  <div class="container mb-5">
+    <div class="row">
+      <div class="col">
+        <h1 class="mb-4 lighter">Progetti recenti</h1>
+      </div>
+    </div>
+    <div class="row">
+        {% if not progetti %}
+        <div class="col-12">
+          <h2>Nessun progetto disponibile</h2>  
+        </div>
+        {% else %}
+        {% for progetto in progetti %}
+        <div class="col-12 col-md-6 col-lg-4 ">
+            <!--start card-->
+              <div class="card-wrapper card-space">
+                <div class="card card-teaser rounded shadow">
+                  <div class="card-body">
+                    <div class="category-top mb-0">
+                        <span class="category" >Ultima modifica</span>
+                        <span class="data">{{progetto.data_modifica|date:"d F Y"}}</span>
+                      </div>
+                    <div class="card-text mb-5">
+                      {% if progetto.immagine_set %}
+                      <a>
+                        <img class="w-100 mb-2" src="{{ progetto.immagine_set.first.img.url }}" >
+                      </a>
+                      {% endif %}
+                      <h5 class="mb-2 card-title">{{progetto.titolo | upper}}</h5>
+                      <div class="my-2">
+                        <p>{{progetto.descrizione|truncatewords:50}}</p>
+                      </div>
+                    </div>
+                    <a class="read-more" href="{% url 'progetto_dettagli' progetto.id %}">
+                      <span>Leggi di più</span>
+                    </a>
+                    {% if not progetto.contributi.exists %}
+                    <span class="badge bg-secondary" style="position: absolute;
+                    bottom: 24px;
+                    right: 24px;">OPEN</span>
+                    {% endif %}
+                  </div>  
+                </div>
+              </div>
+            <!--end card-->
+          </div>
+          {% endfor %}
+        {% endif %}
+    </div>
+    </div>
+    <div class="container">
+    <div class="row">
+        <div class="col">
+          <h1 class="mb-4 lighter">Sviluppi recenti</h1>
+        </div>
+      </div>
+    <div class="row">
+        {% if not sviluppi %}
+        <div class="col-12">
+          <h2>Nessuno sviluppo recente</h2>  
+        </div>
+        {% else %}
+        {% for sviluppo in sviluppi %}
+        <div class="col-12 col-md-6 col-lg-4 ">
+            <!--start card-->
+              <div class="card-wrapper card-space">
+                <div class="card card-teaser rounded shadow">
+                  <div class="card-body">
+                    <div class="card-text mb-5">
+                      <h5 class="mb-2 card-title">{{sviluppo.nome|capfirst}}</h5>
+                      <div class="my-2">
+                        <p>{{sviluppo.descrizione|truncatewords:50}}</p>
+                      </div>
+                    </div>
+                    <a class="read-more" href="{% url 'sviluppo_dettagli' sviluppo.id %}">
+                      <span>Leggi di più</span>
+                    </a>
+                  </div>  
+                </div>
+              </div>
+            <!--end card-->
+          </div>
+          {% endfor %}
+        {% endif %}
+    </div>
+  </div>
+  </div>
+</div>
+{% endblock container %}

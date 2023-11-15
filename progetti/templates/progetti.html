@@ -1,0 +1,133 @@
+{% extends "base.html" %}
+
+{% load static %}
+
+{% block menu_links %}
+<li class="nav-item"><a class="nav-link" href="{% url "progetto_nuovo" %}"><span>Crea progetto</span></a></li>
+{% if request.user.is_authenticated %}
+<li class="nav-item"><a class="nav-link" href="{% url "progetti_utente" %}"><span>I miei progetti</span></a></li>
+{% endif %}
+{% endblock menu_links %}
+
+{% block container %}
+<nav class="breadcrumb-container" aria-label="breadcrumb">
+  <div class="container">
+    <div class="col-12">
+      <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="{% url "home" %}">Home</a><span class="separator">/</span></li>
+        <li class="breadcrumb-item active" aria-current="page">Progetti</li>
+      </ol>
+    </div>
+  </div>
+</nav>
+<div class="py5" style="padding-top:48px; padding-bottom: 48px;">
+  <div class="container">
+    <div class="row">
+      <div class="col">
+        <h1 class="mb-4 lighter">Elenco dei progetti</h1>
+      </div>
+    </div>
+    <div class="row mb-4">
+      <div class="col-8">
+        <div class="chip chip-lg chip-simple" onclick="location.href='{% url "progetti" %}'">
+          <span class="chip-label">Tutti</span>
+        </div>
+        <div class="chip chip-lg chip-simple" onclick="location.href='?stato=opn'">
+          <span class="chip-label">Open call</span>
+        </div>
+        <div class="chip chip-lg chip-simple" onclick="location.href='?stato=inc'">
+          <span class="chip-label">In corso</span>
+        </div>
+        <div class="chip chip-lg chip-simple" onclick="location.href='?stato=cmp'">
+          <span class="chip-label">Completati</span>
+        </div>
+      </div>
+      <div class="col">  
+        <div class="dropdown text-end">
+          <button class="btn btn-dropdown dropdown-toggle" type="button" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="color: #6f0b0a;">
+            Ordina per
+            <svg class="icon-expand icon icon-sm icon-primary"><use href="{% static "/svg/sprites.svg" %}#it-expand"></use></svg>
+          </button>
+          <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+            <div class="link-list-wrapper">
+              <ul class="link-list">
+                <li><a class="dropdown-item list-item" href="?{% if request.GET.stato %}stato={{request.GET.stato}}&{% endif %}ord=dasc"><span>Data (dal più recente)</span></a></li>
+                <li><a class="dropdown-item list-item" href="?{% if request.GET.stato %}stato={{request.GET.stato}}&{% endif %}ord=ddec"><span>Data (dal meno recente)</span></a></li>
+                <li><a class="dropdown-item list-item" href="?{% if request.GET.stato %}stato={{request.GET.stato}}&{% endif %}ord=tasc"><span>Titolo (A-Z)</span></a></li>
+                <li><a class="dropdown-item list-item" href="?{% if request.GET.stato %}stato={{request.GET.stato}}&{% endif %}ord=tdec"><span>Titolo (Z-A)</span></a></li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="row">
+      {% if not progetti %}
+      <div class="col-12">
+        <h2>Nessun progetto disponibile</h2>  
+      </div>
+      {% else %}
+      {% for progetto in progetti %}
+      <div class="col-12 col-md-6 col-lg-4 ">
+        <!--start card-->
+          <div class="card-wrapper card-space">
+            <div class="card card-teaser rounded shadow">
+              <div class="card-body">
+                <div class="card-text mb-5">
+                  {% if progetto.immagine_set %}
+                  <a>
+                    <img class="w-100 mb-2" src="{{ progetto.immagine_set.first.img.url }}" >
+                  </a>
+                  {% endif %}
+                  <h5 class="mb-2 card-title">{{progetto.titolo | upper}}</h5>
+                  <div class="my-2">
+                    <p>{{progetto.descrizione|truncatewords:50}}</p>
+                    <div class="dati-card" style="border-left: 3px solid {% if progetto.stato == "INCORSO" %}#f73e5a{% else %}{% if progetto.stato == "COMPLETATO" %}#57fe5a{% endif %}{% endif %}; padding-left: 10px; margin-top: 10px">
+                      <p>
+                        <strong>Pubblicazione: </strong>{{progetto.data_creazione|date:"d-m-Y"}}<br>
+                        <strong>Autore: </strong>{{progetto.autore}} <br>
+                      </p>
+                    </div>
+                  </div>
+                </div>
+                <a class="read-more" href="{% url 'progetto_dettagli' progetto.id %}">
+                  <span>Leggi di più</span>
+                </a>
+                {% if not progetto.contributi.exists %}
+                <span class="badge bg-secondary" style="position: absolute;
+                bottom: 24px;
+                right: 24px;">OPEN</span>
+                {% endif %}
+              </div>  
+            </div>
+          </div>
+        <!--end card-->
+      </div>
+      {% endfor %}
+    </div>
+    <div class="card-wrapper card-space">
+      <div class="card card-bg no-after">
+          <div class="card-body py-1">
+              <div class="row">
+                  <div class="col w-50">
+                      <span style="color: rgb(5, 11, 18)"><b> {{ page_obj.paginator.object_list|length }} {{ page_obj.paginator.object_list|length|pluralize:"risultato,risultati" }}</b> <span> in <b>{{page_obj.paginator.num_pages}} {{page_obj.paginator.num_pages|pluralize:"pagina,pagine"}}</b></span></span>
+                  </div>
+                  <div class="col w-50">
+                      <div class="float-end">
+                          {% if page_obj.has_previous %}
+                          <a href="?page={{ page_obj.previous_page_number }}&stato={{ request.GET.stato }}&ord={{ request.GET.ord }}" style="color: rgb(5, 11, 18)">&lt; Precedente</a>
+                          {% endif %}
+                          <span class="me-2 ms-2">{{page_obj.number}} / <b>{{page_obj.paginator.num_pages}}</b></span>
+                          {% if page_obj.has_next %}
+                          <a href="?page={{ page_obj.next_page_number }}&stato={{ request.GET.stato }}&ord={{ request.GET.ord }}" style="color: rgb(5, 11, 18)">Successivo &gt;</a>
+                          {% endif %}
+                      </div>
+                  </div>
+              </div>
+          </div>
+      </div>
+    </div>
+    {% endif %}
+  </div>
+</div>
+{% endblock container %}

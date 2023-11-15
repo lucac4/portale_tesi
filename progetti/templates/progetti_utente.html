@@ -1,0 +1,194 @@
+{% extends "base.html" %}
+
+{% load static %}
+
+{% block menu_links %}
+<li class="nav-item"><a class="nav-link" href="{% url "progetto_nuovo" %}"><span>Crea progetto</span></a></li>
+{% endblock menu_links %}
+
+{% block container %}
+<nav class="breadcrumb-container" aria-label="breadcrumb">
+  <div class="container">
+    <div class="col-12">
+      <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="{% url "home" %}">Home</a><span class="separator">/</span></li>
+        <li class="breadcrumb-item active" aria-current="page">I miei progetti</li>
+      </ol>
+    </div>
+  </div>
+</nav>
+<div class="py5" style="padding-top:48px; padding-bottom: 48px;">
+  <div class="container mb-5">
+    <div class="row">
+      <div class="col">
+        <h2 class="mb-4 lighter">Progetti creati da te</h2>
+      </div>
+    </div>
+    <div class="row">
+      {% if not progetti_creati %}
+      <div class="col-12">
+        <h5>Non hai creato nessun progetto</h5>  
+      </div>
+      {% else %}
+      {% for progetto in progetti_creati %}
+      <div class="col-12 col-md-6 col-lg-4 ">
+        <!--start card-->
+          <div class="card-wrapper card-space">
+            <div class="card card-teaser rounded shadow">
+              <div class="card-body">
+                <div class="card-text mb-5">
+                  {% if progetto.immagine_set %}
+                  <a>
+                    <img class="w-100 mb-2" src="{{ progetto.immagine_set.first.img.url }}" >
+                  </a>
+                  {% endif %}
+                  <h5 class="mb-2 card-title">{{progetto.titolo | upper}}</h5>
+                  <div class="my-2">
+                    <p>{{progetto.descrizione|truncatewords:50}}</p>
+                  </div>
+                </div>
+                <div class="read-more">
+                  <a class="text-decoration-none fw-bold text-uppercase" href="{% url 'progetto_dettagli' progetto.id %}">
+                    <span>Dettagli</span>
+                  </a>
+                  <span class="separator">•</span>
+                  <a class="text-decoration-none fw-bold text-uppercase" href="{% url 'progetto_modifica' progetto.id %}">
+                    <span>Modifica</span>
+                  </a>
+                  <span class="separator">•</span>
+                  <a class="text-decoration-none fw-bold text-uppercase" data-bs-toggle="modal" data-bs-target="#eliminaProgettoModale{{progetto.id}}">
+                    <span>Elimina</span>
+                  </a>
+                </div>
+              </div>  
+            </div>
+          </div>
+        <!--end card-->
+      </div>
+      <div class="modal fade" tabindex="-1" role="dialog" id="eliminaProgettoModale{{progetto.id}}" aria-labelledby="titoloModale">
+        <div class="modal-dialog" role="document">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h2 class="modal-title h5 " id="titoloModale">Vuoi eliminare il progetto?</h2>
+            </div>
+            <div class="modal-body">
+              <p>L'eliminazione sarà definitiva.</p>
+            </div>
+            <div class="modal-footer">
+              <button onclick="location.href='{% url "progetto_elimina" progetto.id %}'" class="btn btn-primary btn-sm" type="button">Elimina</button>
+            </div>
+          </div>
+        </div>
+      </div>
+      {% endfor %}
+      {% endif %}
+    </div>
+  </div>
+  <div class="container mb-5">
+    <div class="row">
+      <div class="col">
+        <h2 class="mb-4 lighter">Progetti a cui hai contribuito</h2>
+      </div>
+    </div>
+    <div class="row">
+      {% if not progetti_contribuiti %}
+      <div class="col-12">
+        <h5>Non hai contribuito a nessun progetto </h5>  
+      </div>
+      {% else %}
+      {% for progetto in progetti_contribuiti %}
+      <div class="col-12 col-md-6 col-lg-4 ">
+        <!--start card-->
+          <div class="card-wrapper card-space">
+            <div class="card card-teaser rounded shadow">
+              <div class="card-body">
+                <div class="card-text mb-5">
+                  {% if progetto.immagine_set %}
+                  <a>
+                    <img class="w-100 mb-2" src="{{ progetto.immagine_set.first.img.url }}" >
+                  </a>
+                  {% endif %}
+                  <h5 class="mb-2 card-title">{{progetto.titolo | upper}}</h5>
+                  <div class="my-2">
+                    <p>{{progetto.descrizione|truncatewords:50}}</p>
+                  </div>
+                </div>
+                <div class="read-more">
+                  <a class="text-decoration-none fw-bold text-uppercase" href="{% url 'progetto_dettagli' progetto.id %}">
+                    <span>Dettagli</span>
+                  </a>
+                </div>
+              </div>  
+            </div>
+          </div>
+        <!--end card-->
+      </div>
+      {% endfor %}
+      {% endif %}
+    </div>
+  </div>
+  <div class="container">
+    <div class="row">
+      <div class="col">
+        <h2 class="mb-4 lighter">Le tue attività</h2>
+      </div>
+    </div>
+    <div class="row">
+      {% if not sviluppi %}
+      <div class="col-12">
+        <h5>Non hai nessuna attività</h5>  
+      </div>
+      {% else %}
+      {% for contributo in sviluppi %}
+      <div class="col-12 col-md-6 col-lg-4 ">
+        <!--start card-->
+          <div class="card-wrapper card-space">
+            <div class="card card-teaser rounded shadow">
+              <div class="card-body">
+                <div class="card-text mb-5">
+                  <h5 class="mb-2 card-title">{{contributo.nome | capfirst}}</h5>
+                  <div class="my-2">
+                    <p>{{contributo.descrizione|truncatewords:50}}</p>
+                  </div>
+                </div>
+                <div class="read-more">
+                  <a class="text-decoration-none fw-bold text-uppercase" href="{% url 'sviluppo_dettagli' contributo.id %}">
+                    <span>Dettagli</span>
+                  </a>
+                  <span class="separator">•</span>
+                  <a class="text-decoration-none fw-bold text-uppercase" href="{% url 'sviluppo_modifica' contributo.id %}">
+                    <span>Modifica</span>
+                  </a>
+                  <span class="separator">•</span>
+                  <a class="text-decoration-none fw-bold text-uppercase" data-bs-toggle="modal" data-bs-target="#eliminaContributoModale{{contributo.id}}">
+                    <span>Elimina</span>
+                  </a>
+                </div>
+              </div>  
+            </div>
+          </div>
+        <!--end card-->
+      </div>
+      <div class="modal fade" tabindex="-1" role="dialog" id="eliminaContributoModale{{contributo.id}}" aria-labelledby="titoloModale">
+        <div class="modal-dialog" role="document">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h2 class="modal-title h5 " id="titoloModale">Vuoi eliminare questa attività?</h2>
+            </div>
+            <div class="modal-body">
+              <p>L'eliminazione sarà definitiva.</p>
+            </div>
+            <div class="modal-footer">
+              <button onclick="location.href='{% url "sviluppo_elimina" contributo.id %}'" class="btn btn-primary btn-sm" type="button">Elimina</button>
+            </div>
+          </div>
+        </div>
+      </div>
+      {% endfor %}
+      {% endif %}
+    </div>
+  </div>
+</div>
+{% endblock container %}
+
+

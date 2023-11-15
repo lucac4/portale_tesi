@@ -1,0 +1,251 @@
+{% extends "base.html" %}
+
+{% load static %}
+
+{% block menu_links %}
+{% if request.user.is_authenticated %}
+{% if request.user == progetto.autore %}
+<li class="nav-item"><a class="nav-link" href="{% url "progetto_modifica" progetto.id %}"><span>Modifica progetto</span></a></li>
+{% else %}
+<li class="nav-item"><a class="nav-link" href="{% url "ruolo_imposta" progetto.id %}"><span>Imposta ruolo</span></a></li>
+{% endif %}
+<li class="nav-item"><a class="nav-link" href="{% url "sviluppo_nuovo" progetto.id %}"><span>Aggiungi attività</span></a></li>
+<li class="nav-item"><a class="nav-link" href="{% url "progetti_utente" %}"><span>I miei progetti</span></a></li>
+{% endif %}
+{% endblock menu_links %}
+
+{% block container %}
+<nav class="breadcrumb-container" aria-label="breadcrumb">
+  <div class="container">
+    <div class="col-12">
+      <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="{% url "home" %}">Home</a><span class="separator">/</span></li>
+        <li class="breadcrumb-item"><a href="{% url "progetti" %}">Progetti</a><span class="separator">/</span></li>
+        <li class="breadcrumb-item active" aria-current="page">{{progetto.titolo}}</li>
+      </ol>
+    </div>
+  </div>
+</nav>
+<div class="py5" style="padding-top:48px; padding-bottom: 48px;">
+  <div class="container">
+    <div class="row">
+      <div class="col-md-7">
+        <div class="intro-name">
+          <h1 class="mb-3">{{progetto.titolo}}</h1>
+          <div>
+            <p class="mb-5">{{progetto.descrizione}}</p>
+            {% if progetto.tags.all %}
+            <div class="mb-5">
+              <h5 class="lighter"> Tags </h5>
+                {% for tag in progetto.tags.all %}
+                <span class="badge badge-grey-unical square-corners">
+                  <a class="no-color" href="{% url 'ricerca' %}?tag={{tag.nome}}">
+                    <span class="chip-label">{{ tag.nome }}</span>
+                  </a>
+                </span>
+                {% endfor %}
+            </div>
+            {% endif %}
+            <div class="row">
+              <div class="col-sm">
+                <p>
+                  <span class="text-muted bigger-font ">Autore</span>
+                  <br/>
+                  <a class="no-color" href="{% url 'ricerca' %}?contributore={{progetto.autore}}"> {{progetto.autore}} </a>
+                </p>
+              </div>
+              {% if progetto.contributi.all %}
+              <div class="col-sm">
+                <p>
+                  <span class="text-muted bigger-font">Contributi</span>
+                  <br/>
+                  {% for contributo in progetto.contributi.all %}
+                  <a class="no-color" href="{% url 'ricerca' %}?contributore={{contributo.contributore}}">
+                  {{contributo.contributore}} ({{contributo.ruolo}})
+                  </a>
+                  <br/>
+                  {% endfor %}
+                </p>
+              </div>
+              {% endif %}
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="offset-md-1 col-md-4">
+        {% if progetto.link_progetto %}
+        <div class="row">
+          <div class="col-1">
+            <span>
+              <svg class="icon icon-sm icon-muted me-2" >
+                <use href="{% static '/svg/sprites.svg' %}#it-code-circle"></use>
+              </svg>
+            </span>
+          </div>
+          <div class="col m-auto"><a class="no-color" href="{{progetto.link_progetto}}">Link al progetto su GitHub</a></div>
+        </div>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+
+  <hr/>
+
+  {% if immagini %}
+  <div class="it-carousel-wrapper it-full-carousel it-big-img splide" data-bs-carousel-splide>
+    <div class="splide__track">
+      <ul class="splide__list">
+        {% for immagine in immagini %}
+        <li class="splide__slide">
+          <div class="it-single-slide-wrapper">
+            <div class="card-wrapper">
+              <div class="card card-img no-after">
+                <div class="img-responsive-wrapper">
+                  <div class="img-responsive">
+                    <div class="img-wrapper"><img src="{{immagine.img.url}}" title="{{immagine.img.name}}" alt=""></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </li>
+        {% endfor %}
+      </ul>
+    </div>
+  </div>
+  
+  <hr/>
+  {% endif %}
+
+  <div class="py5" style="padding-top:48px; padding-bottom: 48px;">
+    <div class="container">
+      <h1 class="mb-3 lighter">
+        <a class="no-color" href="{% url "progetto_storia" progetto.id %}">
+          <span> Sviluppi </span>
+          <svg class="icon ms-3">
+            <use xlink:href="{% static '/svg/sprites.svg' %}#it-arrow-right-circle"></use>
+          </svg>
+        </a>
+      </h1>
+      <div class="row">
+        <div class="col-12 col-lg-4">
+          <div class="card-wrapper card-space">
+            <div class="card card-bg">
+              <div class="card-body">
+                <h3 class="card-title h5 ">Completato</h3>
+                {% if sviluppi_completati %}
+                <div class="it-list-wrapper">
+                  <ul class="it-list">
+                    {% for incarico in sviluppi_completati  %}
+                    <li>
+                      <div class="list-item">
+                        <div class="it-right-zone">
+                          
+                            <a href="{% url "sviluppo_dettagli" incarico.id %}" class="no-color"><span class="text">{{incarico.nome}}</span></a>
+                            <span class="metadata">{{incarico.responsabile}}</span>
+                          
+                        </div>
+                      </div>
+                    </li>
+                    {% endfor %}
+                  </ul>
+                </div>
+                {% else %}
+                <div class="it-list-wrapper">
+                  <ul class="it-list">
+                    <li>
+                      <div class="list-item">
+                        <div class="it-right-zone">
+                          <span class="text">Nessun incarico completato</span>
+                        </div>
+                      </div>
+                    </li>
+                  </ul>
+                </div>
+                {% endif %}
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="col-12 col-lg-4">
+          <div class="card-wrapper card-space">
+            <div class="card card-bg">
+              <div class="card-body">
+                <h3 class="card-title h5 ">In corso</h3>
+                {% if sviluppi_incorso %}
+                <div class="it-list-wrapper">
+                  <ul class="it-list">
+                    {% for incarico in sviluppi_incorso  %}
+                    <li>
+                      <div class="list-item">
+                        <div class="it-right-zone">
+                          <a href="{% url "sviluppo_dettagli" incarico.id %}" class="no-color"><span class="text">{{incarico.nome}}</span></a>
+                          <span class="metadata">{{incarico.responsabile}}</span>
+                        </div>
+                      </div>
+                    </li>
+                    {% endfor %}
+                  </ul>
+                </div>
+                {% else %}
+                <div class="it-list-wrapper">
+                  <ul class="it-list">
+                    <li>
+                      <div class="list-item">
+                        <div class="it-right-zone">
+                          <span class="text">Nessun incarico in corso</span>
+                        </div>
+                      </div>
+                    </li>
+                  </ul>
+                </div>
+                {% endif %}
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="col-12 col-lg-4">
+          <div class="card-wrapper card-space">
+            <div class="card card-bg">
+              <div class="card-body">
+                <h3 class="card-title h5 ">Da fare</h3>
+                {% if sviluppi_futuri %}
+                <div class="it-list-wrapper">
+                  <ul class="it-list">
+                    {% for incarico in sviluppi_futuri  %}
+                    <li>
+                      <div class="list-item">
+                        <div class="it-right-zone">
+                          <a href="{% url "sviluppo_dettagli" incarico.id %}" class="no-color"><span class="text">{{incarico.nome}}</span></a>
+                          <span class="metadata">{{incarico.responsabile}}</span>
+                        </div>
+                      </div>
+                    </li>
+                    {% endfor %}
+                  </ul>
+                </div>
+                {% else %}
+                <div class="it-list-wrapper">
+                  <ul class="it-list">
+                    <li>
+                      <div class="list-item">
+                        <div class="it-right-zone">
+                          <span class="text">Nessun incarico da fare</span>
+                        </div>
+                      </div>
+                    </li>
+                  </ul>
+                </div>
+                {% endif %}  
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <hr/> 
+</div>
+
+
+{% endblock container %}
